@@ -1,27 +1,33 @@
-using Microsoft.AspNetCore.Mvc.Testing;
+
 using FluentAssertions;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-
+using System.Security.Claims;
+using WebApi;
 namespace WebApi.Tests
 {
-    public class HelloApiTests : IClassFixture<WebApplicationFactory<Program>>
+    public class HelloApiTests
     {
-        private readonly HttpClient httpClient;
-
-        public HelloApiTests(WebApplicationFactory<Program> factory)
-        {
-            httpClient = factory.CreateClient(); // Uses in-memory test server
-        }
-
         [Fact]
-        public async Task GetHello_ReturnsHelloWorld()
+        public async Task GetHello_WithValidToken_ReturnsUserName()
         {
-            var response = await httpClient.GetAsync("/hello");
+            // Arrange
+            var fakeClaims = new ClaimsPrincipal(
+                new ClaimsIdentity(new[] { new Claim("sub", "123test") }, "mock"));
+
+            var mockUserService = new Mock<IUserDataService>();
+            mockUserService.Setup(x => x.GetUserDisplayName("123test")).Returns("Bob");
+
+            var factory = new TestWebApplicationFactory(fakeClaims, mockUserService.Object);
+            var client = factory.CreateClient();
+
+            // Act
+            var response = await client.GetAsync("/hello");
             var content = await response.Content.ReadAsStringAsync();
+
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            content.Should().Be("Hello, World!");
+            content.Should().Be("Hello, Bob! (UserID: 123test)");
         }
     }
 }
