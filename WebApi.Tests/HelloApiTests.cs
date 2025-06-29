@@ -1,24 +1,20 @@
-using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
-// Adjust the namespace according to your project structure
-using Xunit;
 
 namespace WebApi.Tests;
 
-public class HelloApiTests : IClassFixture<WebApplicationFactory<WebApi.Program>>
+public class HelloApiTests : IClassFixture<WebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client;
+    private readonly HttpClient httpClient;
 
-    public HelloApiTests(WebApplicationFactory<WebApi.Program> factory)
+    public HelloApiTests(WebApplicationFactory<Program> factory)
     {
-        _client = factory.CreateClient(); // Uses in-memory test server
+        httpClient = factory.CreateClient(); // Uses in-memory test server
     }
 
     [Fact]
     public async Task GetHello_ReturnsHelloWorld()
     {
-        var response = await _client.GetAsync("/hello");
+        var response = await httpClient.GetAsync("/hello");
         var content = await response.Content.ReadAsStringAsync();
 
         Assert.True(response.IsSuccessStatusCode);

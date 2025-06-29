@@ -1,5 +1,10 @@
 {
-    "recommendations": [
-        "jmrog.vscode-nuget-package-manager"
-    ]
+    "name": "Debug xUnit Tests",
+    "type": "coreclr",
+    "request": "launch",
+    "program": "${workspaceFolder}/tests/YourTestProjectName/bin/Debug/net8.0/YourTestProjectName.dll",
+    "args": [],
+    "cwd": "${workspaceFolder}/tests/YourTestProjectName",
+    "console": "internalConsole",
+    "stopAtEntry": false
 }
