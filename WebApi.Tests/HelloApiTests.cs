@@ -1,23 +1,26 @@
 using Microsoft.AspNetCore.Mvc.Testing;
+using FluentAssertions;
+using System.Net;
 
-namespace WebApi.Tests;
-
-public class HelloApiTests : IClassFixture<WebApplicationFactory<Program>>
+namespace WebApi.Tests
 {
-    private readonly HttpClient httpClient;
-
-    public HelloApiTests(WebApplicationFactory<Program> factory)
+    public class HelloApiTests : IClassFixture<WebApplicationFactory<Program>>
     {
-        httpClient = factory.CreateClient(); // Uses in-memory test server
-    }
+        private readonly HttpClient httpClient;
 
-    [Fact]
-    public async Task GetHello_ReturnsHelloWorld()
-    {
-        var response = await httpClient.GetAsync("/hello");
-        var content = await response.Content.ReadAsStringAsync();
+        public HelloApiTests(WebApplicationFactory<Program> factory)
+        {
+            httpClient = factory.CreateClient(); // Uses in-memory test server
+        }
 
-        Assert.True(response.IsSuccessStatusCode);
-        Assert.Equal("Hello, World!", content);
+        [Fact]
+        public async Task GetHello_ReturnsHelloWorld()
+        {
+            var response = await httpClient.GetAsync("/hello");
+            var content = await response.Content.ReadAsStringAsync();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            content.Should().Be("Hello, World!");
+
+        }
     }
 }
