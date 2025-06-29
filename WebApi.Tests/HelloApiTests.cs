@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using FluentAssertions;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace WebApi.Tests
 {
@@ -20,7 +22,6 @@ namespace WebApi.Tests
             var content = await response.Content.ReadAsStringAsync();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             content.Should().Be("Hello, World!");
-
         }
     }
 }
