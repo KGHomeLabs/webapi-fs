@@ -1,7 +1,15 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": []
+    "configurations": [
+        {
+            "name": "Debug Tests - xUnit",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/WebApi.Tests/bin/Debug/net8.0/WebApi.Tests.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/WebApi.Tests",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ]
 }
