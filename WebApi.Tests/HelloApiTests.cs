@@ -3,17 +3,18 @@ using FluentAssertions;
 using System.Net;
 using System.Threading.Tasks;
 using System.Security.Claims;
-using WebApi;
+using Moq;
+
 namespace WebApi.Tests
 {
     public class HelloApiTests
     {
-        [Fact]
+        [Fact(DisplayName = "GET /hello without token returns Unauthorized 403")]
         public async Task GetHello_WithValidToken_ReturnsUserName()
         {
             // Arrange
             var fakeClaims = new ClaimsPrincipal(
-                new ClaimsIdentity(new[] { new Claim("sub", "123test") }, "mock"));
+                new ClaimsIdentity([new Claim("sub", "123test")], "mock"));
 
             var mockUserService = new Mock<IUserDataService>();
             mockUserService.Setup(x => x.GetUserDisplayName("123test")).Returns("Bob");

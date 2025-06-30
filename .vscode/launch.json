@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug xUnit Tests",
+            "name": "Wichse im Darkmode",
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/WebApi.Tests/bin/Debug/net8.0/WebApi.Tests.dll",
@@ -10,9 +10,10 @@
             "cwd": "${workspaceFolder}/WebApi.Tests",
             "stopAtEntry": false,
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart",
-            "justMyCode": false,
-            "requireExactSource": false
+            "justMyCode": false, // important!
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
         }
     ]
 }
