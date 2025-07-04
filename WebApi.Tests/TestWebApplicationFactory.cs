@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
+
+
 namespace WebApi.Tests
 {
-    public class TestWebApplicationFactory : WebApplicationFactory<Program>
+    public class TestWebApplicationFactory : WebApplicationFactory<Program> // Use <Startup> if not using minimal API
     {
         private readonly IUserDataService _mockUserDataService;
         private readonly ClaimsPrincipal _user;
@@ -22,16 +24,18 @@ namespace WebApi.Tests
         {
             builder.ConfigureServices(services =>
             {
-                // REMOVE the original registration (from Startup)
+                // Remove the original IUserDataService registration
                 services.RemoveAll<IUserDataService>();
 
-                // ADD your mock
+                // Add the mock IUserDataService
                 services.AddSingleton(_mockUserDataService);
 
-                // OPTIONAL: inject claims principal via custom IHttpContextAccessor
-                services.AddSingleton<IHttpContextAccessor>(new FakeHttpContextAccessor(_user));
+                // Inject the ClaimsPrincipal via IHttpContextAccessor
+                services.AddSingleton<IHttpContextAccessor>(new HttpContextAccessor
+                {
+                    HttpContext = new DefaultHttpContext { User = _user }
+                });
             });
         }
     }
-
 }
