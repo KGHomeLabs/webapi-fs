@@ -6,20 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 [Route("[controller]")]
 public class HelloController : ControllerBase
 {
-    private readonly IUserDataService _userDataService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IUserDataService _userDataService; 
 
-    public HelloController(IUserDataService userDataService, IHttpContextAccessor httpContextAccessor)
+    public HelloController(IUserDataService userDataService)
     {
-        _userDataService = userDataService;
-        _httpContextAccessor = httpContextAccessor;
+        _userDataService = userDataService;    
     }
 
     [HttpGet]
     [Route("/hello")]
-    public ActionResult<string> Get()
+    public ActionResult<string> ClownsWorld()
     {
-        var userId = _httpContextAccessor.HttpContext?.User.FindFirst("sub")?.Value;
+        var userId = HttpContext?.User.FindFirst("sub")?.Value;
 
         if (string.IsNullOrEmpty(userId))
             return Unauthorized("Missing sub claim");
