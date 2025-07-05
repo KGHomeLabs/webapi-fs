@@ -1,42 +1,31 @@
-using Microsoft.AspNetCore.Authentication;
+
+// TestWebApplicationFactory.cs
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Security.Claims;
+using Moq;
+using WebApi;
+using WebApi.Tests;
 
-
-
-namespace WebApi.Tests
+public class TestWebApplicationFactory : WebApplicationFactory<Program>
 {
-    public class TestWebApplicationFactory : WebApplicationFactory<Program> // Use <Startup> if not using minimal API
+    public UserDataServiceMock TestUserDataService { get; }
+
+    public TestWebApplicationFactory()
     {
-        private readonly IUserDataService _mockUserDataService;
-        private readonly ClaimsPrincipal _user;
-
-        public TestWebApplicationFactory(ClaimsPrincipal user, IUserDataService mockUserDataService)
+        // Create the concrete test implementation
+        TestUserDataService = new UserDataServiceMock();
+    }
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.ConfigureServices(services =>
         {
-            _user = user;
-            _mockUserDataService = mockUserDataService;
-        }
+            // Remove the original IUserDataService registration
+            services.RemoveAll<IUserDataService>();
 
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {
-            builder.ConfigureServices(services =>
-            {
-                // Remove the original IUserDataService registration
-                services.RemoveAll<IUserDataService>();
-                // Add the mock IUserDataService
-                services.AddSingleton(_mockUserDataService);
-
-                // Add test authentication
-                services.AddAuthentication(defaultScheme: "Test")
-                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
-
-                // Register the test user
-                services.AddSingleton(_user);
-            });
-        }
+            // Add the mock IUserDataService
+            services.AddSingleton<IUserDataService>(TestUserDataService);
+        });
     }
 }

@@ -8,9 +8,9 @@ using System.Linq;
 public class HasClaimAttribute : Attribute, IAuthorizationFilter
 {
     private readonly string _claimType;
-    private readonly string _claimValue;
+    private readonly string? _claimValue;
 
-    public HasClaimAttribute(string claimType, string claimValue = null)
+    public HasClaimAttribute(string claimType, string? claimValue = null)
     {
         _claimType = claimType;
         _claimValue = claimValue;
@@ -19,14 +19,12 @@ public class HasClaimAttribute : Attribute, IAuthorizationFilter
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         var user = context.HttpContext.User;
-
         // Check if user is authenticated
-        if (!user.Identity.IsAuthenticated)
+        if (user.Identity == null || !user.Identity.IsAuthenticated)
         {
-            context.Result = new UnauthorizedResult(); // 401
+            context.Result = new UnauthorizedResult();
             return;
         }
-
         // Check if user has the required claim
         bool hasClaim;
 
@@ -43,7 +41,7 @@ public class HasClaimAttribute : Attribute, IAuthorizationFilter
 
         if (!hasClaim)
         {
-            context.Result = new ForbidResult(); // 403
+            context.Result = new UnauthorizedResult(); // 403
             return;
         }
     }

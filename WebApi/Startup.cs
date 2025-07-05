@@ -31,7 +31,7 @@ namespace WebApi
             // JWT Authentication with validation disabled for testing
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
-                {
+                {//todo, this needs to be made environment speciffic / test speciffic it also needs to work on a standard buildserver
                    // options.UseSecurityTokenValidators = true; // Force use of old handler
                     options.MapInboundClaims = false;
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -61,9 +61,9 @@ namespace WebApi
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            app.UseAuthentication();  // JWT extracts token → creates sub claim
-            app.UseMyStuff();         // Your middleware adds userFart claim
-            app.UseAuthorization();   // Standard authorization
+            app.UseAuthentication();  // JWT extracts token → creates sub claim from the token I generate
+            app.UseUserRepositoryClaims(); // My middleware adds a prototype comical userFart claim from my UserDataService
+            app.UseAuthorization();   // Standard authorization setup
 
             app.UseEndpoints(endpoints =>
             {

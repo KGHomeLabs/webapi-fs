@@ -5,7 +5,7 @@ namespace WebApi.Extensions
 {
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseMyStuff(this IApplicationBuilder app)
+        public static IApplicationBuilder UseUserRepositoryClaims(this IApplicationBuilder app)
         {
             return app.UseMiddleware<UserEnrichmentMiddleware>();
         }
