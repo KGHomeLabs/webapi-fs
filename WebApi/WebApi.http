@@ -1,6 +1,20 @@
 @WebApi_HostAddress = https://localhost:5001
+@Bearer_Token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
 
 GET {{WebApi_HostAddress}}/hello
 Accept: application/json
+
+###
+
+### Test Hello Endpoint - No Auth (should fail)
+GET {{WebApi_HostAddress}}/hello
+Accept: application/json
+
+###
+
+### Test Hello Endpoint - With JWT Token
+GET {{WebApi_HostAddress}}/hello
+Accept: application/json
+Authorization: Bearer {{Bearer_Token}}
 
 ###
