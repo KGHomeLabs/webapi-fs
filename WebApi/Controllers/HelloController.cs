@@ -1,30 +1,29 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class HelloController : ControllerBase
 {
-    private readonly IUserDataService _userDataService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public HelloController(IUserDataService userDataService, IHttpContextAccessor httpContextAccessor)
+    public HelloController()
     {
-        _userDataService = userDataService;
-        _httpContextAccessor = httpContextAccessor;
+
     }
 
     [HttpGet]
     [Route("/hello")]
-    public ActionResult<string> Get()
+    [HasClaim("sub")]  
+    [HasClaim("userFart")]  //TODO:  this could also be replaced by a policy... I will try after fixing Clerk in the frontend
+    public ActionResult<string> ClownsWorld()
     {
-        var userId = _httpContextAccessor.HttpContext?.User.FindFirst("sub")?.Value;
+        var userId = HttpContext?.User.FindFirst("sub")?.Value;
+        var userFart = HttpContext?.User.FindFirst("userFart")?.Value;
+        
 
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized("Missing sub claim");
-
-        var name = _userDataService.GetUserDisplayName(userId);
-        return Ok($"Hello, {name}! (UserID: {userId})");
+        return Ok($"Hello, {userFart}! (UserID: {userId})");
     }
 }

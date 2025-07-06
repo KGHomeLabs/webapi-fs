@@ -1,26 +1,51 @@
+﻿
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using WebApi.Extensions;
 
 
 namespace WebApi
 {
     public class Startup
-    {
+    {     
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IUserDataService, UserDataService>(); // REAL registration
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+            services.AddControllers();
+            services.AddSingleton<IUserDataService, UserDataService>();
+
+            // JWT Authentication with validation disabled for testing
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {//todo, this needs to be made environment speciffic / test speciffic it also needs to work on a standard buildserver
+                   // options.UseSecurityTokenValidators = true; // Force use of old handler
+                    options.MapInboundClaims = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = false,
+                        ValidateIssuerSigningKey = false,
+                        RequireSignedTokens = false,
+                        RequireExpirationTime = false,
+                        SignatureValidator = (token, parameters) => new Microsoft.IdentityModel.JsonWebTokens.JsonWebToken(token)  //funny the token validator depends on weather UseSecurityTokenValidators = true
+                    };
+                });
+
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
@@ -34,17 +59,15 @@ namespace WebApi
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
+
+            app.UseAuthentication();  // JWT extracts token → creates sub claim from the token I generate
+            app.UseUserRepositoryClaims(); // My middleware adds a prototype comical userFart claim from my UserDataService
+            app.UseAuthorization();   // Standard authorization setup
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/hello", () => "Hello, World!")
-                    .WithName("GetHello")
-                    .WithSummary("Returns a greeting message")
-                    .WithDescription("This endpoint returns a simple 'Hello, World!' message.")
-                    .WithTags("Greeting")
-                    .WithOpenApi();
+                endpoints.MapControllers();
             });
         }
     }
