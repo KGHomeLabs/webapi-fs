@@ -25,50 +25,44 @@ public class HelloControllerIntegrationTests : IClassFixture<TestWebApplicationF
         _client = factory.CreateClient();
     }
 
-    [Fact]
-    public void SimpleTest()
-    {
-        var x = 5; // SET BREAKPOINT HERE
-        var y = 10;
-        Assert.Equal(15, x + y);
-    }
 
-    [Fact]
+    [Fact(DisplayName = "Returns 200 with token provided")]
+    [Trait("Integration Test", "Happy Path")]    
     public async Task HelloEndpoint_WithValidToken_ReturnsExpectedResponse()
     {
         const string userId = "test-user-123";
-        
+
         _client.SetFakeJwtToken(
             new Claim("sub", userId),
             new Claim("iss", "test-issuer")
-        );        
-        var response = await _client.GetAsync("/hello");        
-        response.StatusCode.Should().Be(HttpStatusCode.OK);     
+        );
+        var response = await _client.GetAsync("/hello");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain($"TestRealUser_{userId}");   
+        content.Should().Contain($"TestRealUser_{userId}");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Returns 401 Unauthorized when no JWT token is provided")]
+    [Trait("Integration Test", "Authentication")]
     public async Task HelloEndpoint_WithoutToken_ReturnsUnauthorized()
-    {      
+    {
         var response = await _client.GetAsync("/hello");
         //should be unauthorized because there is no token set in this case.
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-    [Fact]
-    public async Task HelloEndpoint_WithDifferentUser_CallsServiceCorrectly()
+
+    [Fact(DisplayName = "Returns 401 Unauthorized when the JWT does not contain required claims")]
+    [Trait("Integration Test", "Authentication")]
+    public async Task HelloEndpoint_CallsServiceCorrectlyMissingClaims()
     {
-        _client.SetFakeJwtToken(new Claim("sub", "another-user"));
+        _client.SetFakeJwtToken(new Claim("iss", "test-issuer"));
 
         try
         {
             var response = await _client.GetAsync("/hello");
-
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var content = await response.Content.ReadAsStringAsync();
-            content.Should().Contain("Hello, Jane Smith!").And.Contain("UserID: another-user");
+            //should be unauthorized because there is no token set in this case.
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
         catch (Exception ex)
         {
