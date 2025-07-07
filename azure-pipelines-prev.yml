@@ -1,4 +1,4 @@
-﻿trigger:
+trigger:
   branches:
     include:
       - prev  # 🔁 only trigger when merging into `prev`
