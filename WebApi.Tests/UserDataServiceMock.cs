@@ -4,12 +4,8 @@ namespace WebApi.Tests
     {
         public string GetUserDisplayName(string userId)
         {
-            // Pretend this talks to a database
-            return userId switch
-            {
-                "123test" => "Bob",
-                _ => "Unknown"
-            };
+            // pretend real logic here
+            return $"TestRealUser_{userId}";
         }
     }
 }

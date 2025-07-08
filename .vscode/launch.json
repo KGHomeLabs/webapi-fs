@@ -2,18 +2,53 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Wichse im Darkmode",
+            "name": "▶️ Debug WebApi",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/WebApi.Tests/bin/Debug/net8.0/WebApi.Tests.dll",
+            "preLaunchTask": "start-webapi",
+            "program": "${workspaceFolder}/WebApi/bin/Debug/net8.0/WebApi.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/WebApi.Tests",
-            "stopAtEntry": false,
-            "console": "internalConsole",
-            "justMyCode": false, // important!
+            "cwd": "${workspaceFolder}/WebApi",
             "env": {
-                "DOTNET_ENVIRONMENT": "Development"
-            }
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000"
+            },
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "justMyCode": false,
+            "requireExactSource": false
+        },
+        {
+            "name": "🧪 Debug WebApi.Tests",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-sln",
+            "program": "dotnet",
+            "args": [
+                "test",
+                "${workspaceFolder}/WebApi.Tests/WebApi.Tests.csproj",
+                "--no-build",
+                "--filter",
+                "FullyQualifiedName=WebApi.Tests.HelloApiTests.GetHello_WithValidToken_ReturnsUserName"
+            ],
+            "cwd": "${workspaceFolder}/WebApi.Tests",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "justMyCode": false,
+            "requireExactSource": false
+        }
+    ],
+    "compounds": [
+        {
+            "name": "WebApi + Tests",
+            "configurations": [
+                "▶️ Debug WebApi",
+                "🧪 Debug WebApi.Tests"
+            ],
+            "preLaunchTask": "build-sln"
         }
     ]
 }
