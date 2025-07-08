@@ -25,6 +25,7 @@ namespace WebApi
                     RequireExpirationTime = false,
                     SignatureValidator = (token, parameters) => new Microsoft.IdentityModel.JsonWebTokens.JsonWebToken(token)
                 };
+                return options;
             }
             throw new Exception("[STARTUP] no Environment defined !");            
         }
