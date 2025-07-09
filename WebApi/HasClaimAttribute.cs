@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Linq;
 
-// Custom Authorization Attribute that actually checks claims
+// Custom Authorization Attribute that actually checks claims for existance
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 public class HasClaimAttribute : Attribute, IAuthorizationFilter
 {
