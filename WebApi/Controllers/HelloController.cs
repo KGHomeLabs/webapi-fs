@@ -1,29 +1,33 @@
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
-
-[ApiController]
-[Route("[controller]")]
-[Authorize]
-public class HelloController : ControllerBase
+namespace WebApi.Controllers
 {
-    public HelloController()
+    [ApiController]
+    [Route("[controller]")]
+    [Authorize]
+    public class HelloController : ControllerBase
     {
+        private readonly ILogger<HelloController> _logger;
+        public HelloController(ILogger<HelloController> logger)
+        {
+            _logger = logger;
+        }
 
-    }
+        [HttpGet]
+        [Route("/hello")]
+        [HasClaim("sub")]
+        [HasClaim("userFart")]  //TODO:  this could also be replaced by a policy... I will try after fixing Clerk in the frontend
+        public ActionResult<string> ClownsWorld()
+        {
+            _logger.LogInformation("ClownsWorld endpoint called");
 
-    [HttpGet]
-    [Route("/hello")]
-    [HasClaim("sub")]  
-    [HasClaim("userFart")]  //TODO:  this could also be replaced by a policy... I will try after fixing Clerk in the frontend
-    public ActionResult<string> ClownsWorld()
-    {
-        var userId = HttpContext?.User.FindFirst("sub")?.Value;
-        var userFart = HttpContext?.User.FindFirst("userFart")?.Value;
-        
+            var userId = HttpContext?.User.FindFirst("sub")?.Value;
+            var userFart = HttpContext?.User.FindFirst("userFart")?.Value;
 
-        return Ok($"Hello, {userFart}! (UserID: {userId})");
+            return Ok($"Hello, {userFart}! (UserID: {userId})");
+        }
     }
 }
