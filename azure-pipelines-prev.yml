@@ -5,7 +5,9 @@ trigger:
   paths:
     exclude:
       - azure-pipelines-prev.yml
+      
 pr: none
+
 pool:
   vmImage: 'windows-latest'
 
