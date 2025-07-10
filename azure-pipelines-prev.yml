@@ -25,3 +25,22 @@ steps:
   inputs:
     testResultsFormat: 'VSTest'
     testResultsFiles: '**/TestResults/*.trx'
+
+# STEP 1: dotnet publish to output deployable files
+- script: dotnet publish --configuration Release --output $(Build.ArtifactStagingDirectory)
+  displayName: 'Publish App'
+
+# STEP 2: Publish artifacts 
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
+    publishLocation: 'Container'
+
+# STEP 3: Deploy that artifact Azure Web App
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'Connection2Azure'  
+    appType: 'webApp'                     # I think thats the windows standard version
+    appName: 'app-service-homelab'              
+    package: '$(Pipeline.Workspace)/drop' 
