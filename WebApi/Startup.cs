@@ -23,29 +23,18 @@ namespace WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var serviceProvider = services.BuildServiceProvider();
+            var env = serviceProvider.GetRequiredService<IWebHostEnvironment>();
+
+            // var jwtSettings = Configuration.GetSection("JwtSettings"); //TODO get back to this in production. currently this is environment safe
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             services.AddControllers();
             services.AddSingleton<IUserDataService, UserDataService>();
-
-            // JWT Authentication with validation disabled for testing
+                        
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {//todo, this needs to be made environment speciffic / test speciffic it also needs to work on a standard buildserver
-                   // options.UseSecurityTokenValidators = true; // Force use of old handler
-                    options.MapInboundClaims = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = false,
-                        ValidateIssuerSigningKey = false,
-                        RequireSignedTokens = false,
-                        RequireExpirationTime = false,
-                        SignatureValidator = (token, parameters) => new Microsoft.IdentityModel.JsonWebTokens.JsonWebToken(token)  //funny the token validator depends on weather UseSecurityTokenValidators = true
-                    };
-                });
-
+                        .AddJwtBearer(options => JWTOptionSelector.GetJwtBearerOptions(options, env));
+            
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
@@ -61,9 +50,9 @@ namespace WebApi
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            app.UseAuthentication();  // JWT extracts token → creates sub claim from the token I generate
+            app.UseAuthentication();  
             app.UseUserRepositoryClaims(); // My middleware adds a prototype comical userFart claim from my UserDataService
-            app.UseAuthorization();   // Standard authorization setup
+            app.UseAuthorization();  
 
             app.UseEndpoints(endpoints =>
             {
