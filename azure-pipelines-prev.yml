@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - prev  # 🔁 only trigger when merging into `prev`
+      - prev  # merging into `prev`
   paths:
     exclude:
       - azure-pipelines-prev.yml
