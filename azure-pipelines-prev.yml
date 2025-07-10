@@ -2,7 +2,7 @@ trigger:
   branches:
     include:
       - prev  # 🔁 only trigger when merging into `prev`
-
+  pr: none
 pool:
   vmImage: 'windows-latest'
 
