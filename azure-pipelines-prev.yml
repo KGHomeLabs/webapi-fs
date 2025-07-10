@@ -2,7 +2,10 @@ trigger:
   branches:
     include:
       - prev  # 🔁 only trigger when merging into `prev`
-  pr: none
+  paths:
+    exclude:
+      - azure-pipelines-prev.yml
+pr: none
 pool:
   vmImage: 'windows-latest'
 
