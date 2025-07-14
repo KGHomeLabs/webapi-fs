@@ -26,10 +26,19 @@ namespace WebApi
             var serviceProvider = services.BuildServiceProvider();
             var env = serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
+
+
             // var jwtSettings = Configuration.GetSection("JwtSettings"); //TODO get back to this in production. currently this is environment safe
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             services.AddControllers();
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            // Add database setup service
+            services.AddSingleton<DatabaseSetupService>(provider =>
+            {                
+                return new DatabaseSetupService(connectionString);
+            });
+
             services.AddSingleton<IUserDataService, UserDataService>();
                         
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -39,10 +48,16 @@ namespace WebApi
             services.AddSwaggerGen();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
+                // Initialize database
+                using (var scope = app.ApplicationServices.CreateScope())
+                {
+                    var dbSetup = scope.ServiceProvider.GetRequiredService<DatabaseSetupService>();
+                    await dbSetup.InitializeAsync();
+                }
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
