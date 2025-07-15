@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace YourWebApi.Migrations
 {
-    class Program
+    public class Program
     {
         static async Task<int> Main(string[] args)
         {
@@ -112,12 +112,13 @@ namespace YourWebApi.Migrations
             command.CommandText = "SELECT COUNT(*) FROM sys.databases WHERE name = @DatabaseName";
             command.Parameters.AddWithValue("@DatabaseName", databaseName);
 
-            var exists = (int)await command.ExecuteScalarAsync();
+            var exists = (int) await command.ExecuteScalarAsync();
             if (exists == 0)
             {
                 command.CommandText = $"CREATE DATABASE [{databaseName}]";
                 command.Parameters.Clear();
                 await command.ExecuteNonQueryAsync();
+
                 Console.WriteLine($"Created database: {databaseName}");
             }
         }

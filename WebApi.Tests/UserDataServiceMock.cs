@@ -1,3 +1,5 @@
+using WebApi.Services;
+
 namespace WebApi.Tests
 {
     public class UserDataServiceMock : IUserDataService
