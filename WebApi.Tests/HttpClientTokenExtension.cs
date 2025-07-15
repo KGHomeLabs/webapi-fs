@@ -5,27 +5,30 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 
-public static class HttpClientExtensions
+namespace WebApi.Tests.Extensions
 {
-    public static void SetFakeJwtToken(this HttpClient client, params Claim[] claims)
+    public static class HttpClientExtensions
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-
-        // Create a simple token descriptor - since your service disables validation, 
-        // we don't need real signing
-        var tokenDescriptor = new SecurityTokenDescriptor
+        public static void SetFakeJwtToken(this HttpClient client, params Claim[] claims)
         {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddHours(1),
-            SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes("fake-key-for-testing-only-needs-to-be-long-enough")),
-                SecurityAlgorithms.HmacSha256Signature)
-        };
+            var tokenHandler = new JwtSecurityTokenHandler();
 
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        var tokenString = tokenHandler.WriteToken(token);
+            // Create a simple token descriptor - since your service disables validation, 
+            // we don't need real signing
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes("fake-key-for-testing-only-needs-to-be-long-enough")),
+                    SecurityAlgorithms.HmacSha256Signature)
+            };
 
-        client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenString);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", tokenString);
+        }
     }
 }

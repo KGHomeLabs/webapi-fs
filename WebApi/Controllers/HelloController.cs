@@ -18,8 +18,7 @@ namespace WebApi.Controllers
 
         [HttpGet]
         [Route("/hello")]
-        [HasClaim("sub")]
-        [HasClaim("userFart")]  //TODO:  this could also be replaced by a policy... I will try after fixing Clerk in the frontend
+        [HasClaim("sub")]      
         public ActionResult<string> ClownsWorld()
         {
             _logger.LogInformation("ClownsWorld endpoint called");

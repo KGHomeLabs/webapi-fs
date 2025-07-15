@@ -4,28 +4,22 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Moq;
-using WebApi;
-using WebApi.Tests;
+using WebApi.Services;
 
-public class TestWebApplicationFactory : WebApplicationFactory<Program>
+namespace WebApi.Tests
 {
-    public UserDataServiceMock TestUserDataService { get; }
-
-    public TestWebApplicationFactory()
+    public class TestWebApplicationFactory : WebApplicationFactory<Program>
     {
-        // Create the concrete test implementation
-        TestUserDataService = new UserDataServiceMock();
-    }
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.ConfigureServices(services =>
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            // Remove the original IUserDataService registration
-            services.RemoveAll<IUserDataService>();
+            builder.ConfigureServices(services =>
+            {
+                // Remove the original IUserDataService registration
+                services.RemoveAll<IUserDataService>();
 
-            // Add the mock IUserDataService
-            services.AddSingleton<IUserDataService>(TestUserDataService);
-        });
+                // Add the mock IUserDataService
+                services.AddSingleton<IUserDataService, UserDataService>();
+            });
+        }
     }
 }
