@@ -37,11 +37,12 @@ namespace WebApi.Services
             var query = new Query("Users").Where("UserId", userId);
             return await queryFactory.FirstOrDefaultAsync<UserDBO>(query);
         }
-
-        public async Task<IEnumerable<UserDBO>> GetAllUsers()
+        public async Task<IEnumerable<UserDBO>> GetAllUsers(int page = 1, int pageSize = 10)
         {
             using var queryFactory = CreateQueryFactory();
-            var query = new Query("Users");
+            var query = new Query("Users")
+                .Offset((page - 1) * pageSize)
+                .Limit(pageSize);
             return await queryFactory.GetAsync<UserDBO>(query);
         }
 

@@ -31,7 +31,7 @@ namespace WebApi.Tests.Setup
             // Run schema and operational migrations
             var currentDir = Directory.GetCurrentDirectory();
             var solutionDir = Directory.GetParent(currentDir)?.Parent?.Parent?.Parent?.FullName;
-            var migrationsDir = Path.Combine(solutionDir, "WebApi.Migrations");
+            var migrationsDir = Path.Combine(solutionDir!, "WebApi.Migrations");
 
             var process = new Process
             {
@@ -71,7 +71,7 @@ namespace WebApi.Tests.Setup
         }
     }
 
-    [CollectionDefinition("DatabaseCollection")]
+    [CollectionDefinition("DatabaseCollection", DisableParallelization = true)]
     public class DatabaseCollection : ICollectionFixture<DataSetupFixture>
     {
         // This class has no code; it defines the collection for xUnit

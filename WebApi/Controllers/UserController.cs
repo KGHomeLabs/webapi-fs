@@ -37,6 +37,27 @@ namespace WebApi.Controllers
             return Ok(user);
         }
 
+        [HttpGet]
+        [HasClaim("sub")]
+        public async Task<ActionResult<IEnumerable<UserDBO>>> GetAllUsers([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        {
+            _logger.LogInformation($"GetAllUsers endpoint called with page: {page}, pageSize: {pageSize}");
+
+            var callingUser = HttpContext.Items["UserDBO"] as UserDBO;
+            if (callingUser == null || !callingUser.IsAdmin)
+            {
+                return Forbid();
+            }
+
+            if (page < 1 || pageSize < 1)
+            {
+                return BadRequest("Page and pageSize must be positive integers.");
+            }
+
+            var users = await _userDataService.GetAllUsers(page, pageSize);
+            return Ok(users);
+        }
+
         [HttpGet("{userId}")]
         [HasClaim("sub")]
         public async Task<ActionResult<UserDBO>> GetUserById(string userId)
@@ -65,7 +86,7 @@ namespace WebApi.Controllers
         {
             _logger.LogInformation($"CreateUser endpoint called for UserId: {user.UserId}");
             var callingUser = HttpContext.Items["UserDBO"] as UserDBO;
-            if (!callingUser.IsAdmin)
+            if (callingUser == null || !callingUser.IsAdmin)
             {
                 return Forbid();
             }
