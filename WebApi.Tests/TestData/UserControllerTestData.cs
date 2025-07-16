@@ -10,7 +10,8 @@ using WebApi.Tests.Setup;
 namespace WebApi.Tests.TestData
 {
     public class UserControllerTestData : ATestDataSetup
-    {
+    {      
+
         public UserControllerTestData(IDbConnection connection) : base(connection)
         {
         }

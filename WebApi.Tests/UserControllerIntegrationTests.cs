@@ -22,24 +22,24 @@ namespace WebApi.Tests
             _client = factory.CreateClient();
         }
 
-        protected override ATestDataSetup CreateDataSetup(IDbConnection connection)
-        {
-            return new UserControllerTestData(connection);
-        }
-
         [Fact(DisplayName = "Me endpoint returns 200 with valid token")]
         [Trait("Integration Test", "Happy Path")]
         public async Task MeEndpoint_WithValidToken_ReturnsUserName()
         {
+            var dataSetup = new UserControllerTestData(Connection);
+            AddTestDataSetup(dataSetup);
+
             const string userId = "test001"; // From MeTestDataSetup.Seed
             _client.SetFakeJwtToken(
                 new Claim("sub", userId),
                 new Claim("iss", "test-issuer")
             );
-            var response = await _client.GetAsync("/me");
+            var response = await _client.GetAsync("api/user/me");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var content = await response.Content.ReadAsStringAsync();
             content.Should().Contain("test_user"); // Matches UserName from Seed
+
+            dataSetup.Clean();
         }
     }
 }

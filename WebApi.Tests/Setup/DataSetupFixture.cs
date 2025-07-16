@@ -16,10 +16,17 @@ namespace WebApi.Tests.Setup
         {
             // Load configuration
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .Build();
+              .SetBasePath(Directory.GetCurrentDirectory())
+              .AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true)
+              .Build();
+
             var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new System.Exception("Connection string 'DefaultConnection' not found in appsettings.Development.json.");
+            }
+       
 
             // Run schema and operational migrations
             var currentDir = Directory.GetCurrentDirectory();

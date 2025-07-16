@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using Xunit;
 
@@ -7,20 +8,26 @@ namespace WebApi.Tests.Setup
     public abstract class DatabaseIntegrationBase : IClassFixture<TestWebApplicationFactory>, IDisposable
     {
         protected readonly IDbConnection Connection;
-        protected readonly ATestDataSetup DataSetup;
+        protected readonly List<ATestDataSetup> TestDataSetups;
 
         protected DatabaseIntegrationBase(DataSetupFixture dbFixture, TestWebApplicationFactory factory)
         {
             Connection = dbFixture.Connection;
-            DataSetup = CreateDataSetup(Connection);
-            DataSetup.Seed();
+            TestDataSetups = new List<ATestDataSetup>();
         }
 
-        protected abstract ATestDataSetup CreateDataSetup(IDbConnection connection);
+        protected void AddTestDataSetup(ATestDataSetup setup)
+        {
+            TestDataSetups.Add(setup);
+            setup.Seed();
+        }
 
         public virtual void Dispose()
         {
-            DataSetup.Clean();
+            foreach (var setup in TestDataSetups)
+            {
+                setup.Clean();
+            }
         }
     }
 }

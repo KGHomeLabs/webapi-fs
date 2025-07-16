@@ -7,6 +7,7 @@ using Xunit;
 using System;
 using System.Diagnostics;
 using WebApi.Tests.Extensions;
+using WebApi.Tests.Setup;
 
 namespace WebApi.Tests
 {

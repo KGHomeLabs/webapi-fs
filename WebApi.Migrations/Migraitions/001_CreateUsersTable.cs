@@ -23,12 +23,6 @@ namespace WebApi.Migrations.Migrations
                 .WithColumn("IsRoot").AsBoolean().NotNullable().WithDefaultValue(false)
                 .WithColumn("UserName").AsString(255).NotNullable().WithDefaultValue("")
                 .WithColumn("IsLockedOut").AsBoolean().NotNullable().WithDefaultValue(false);
-
-            // Insert test data
-            Insert.IntoTable("Users")
-                .Row(new { UserId = "user001", IsAdmin = false, IsRoot = false, UserName = "john_doe", IsLockedOut = false })
-                .Row(new { UserId = "admin001", IsAdmin = true, IsRoot = false, UserName = "admin_user", IsLockedOut = false })
-                .Row(new { UserId = "root001", IsAdmin = true, IsRoot = true, UserName = "root_user", IsLockedOut = false });
         }
 
         public override void Down()
