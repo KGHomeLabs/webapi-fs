@@ -23,7 +23,7 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("me")]
-        [HasClaim("sub")]  
+        [HasClaim("sub")]
         public ActionResult<UserDBO> GetCurrentUser()
         {
             _logger.LogInformation("GetCurrentUser endpoint called");
@@ -37,19 +37,45 @@ namespace WebApi.Controllers
             return Ok(user);
         }
 
+        [HttpGet("{userId}")]
+        [HasClaim("sub")]
+        public async Task<ActionResult<UserDBO>> GetUserById(string userId)
+        {
+            _logger.LogInformation($"GetUserById endpoint called for UserId: {userId}");
+
+            var callingUser = HttpContext.Items["UserDBO"] as UserDBO;
+            if (callingUser == null || !callingUser.IsAdmin)
+            {
+                return Forbid();
+            }
+
+            var user = await _userDataService.GetUserById(userId);
+            if (user == null)
+            {
+                return NotFound($"User with UserId {userId} not found");
+            }
+
+            return Ok(user);
+        }
+
 
         [HttpPost]
         [HasClaim("sub")]
         public async Task<ActionResult> CreateUser([FromBody] UserDBO user)
         {
             _logger.LogInformation($"CreateUser endpoint called for UserId: {user.UserId}");
+            var callingUser = HttpContext.Items["UserDBO"] as UserDBO;
+            if (!callingUser.IsAdmin)
+            {
+                return Forbid();
+            }
             var existingUser = await _userDataService.GetUserById(user.UserId);
             if (existingUser != null)
             {
                 return Conflict($"User with UserId {user.UserId} already exists");
             }
             await _userDataService.CreateUser(user);
-            return CreatedAtAction(nameof(GetCurrentUser), new { userId = user.UserId }, user);
+            return CreatedAtAction(nameof(GetUserById), new { userId = user.UserId }, user);
         }
 
         [HttpPut("{userId}")]
@@ -60,7 +86,7 @@ namespace WebApi.Controllers
             var currentUser = HttpContext.Items["UserDBO"] as UserDBO;
             if (currentUser == null || !currentUser.IsAdmin)
             {
-                return Forbid("Only admins can update users");
+                return Forbid();
             }
             var existingUser = await _userDataService.GetUserById(userId);
             if (existingUser == null)
@@ -86,7 +112,7 @@ namespace WebApi.Controllers
             var currentUser = HttpContext.Items["UserDBO"] as UserDBO;
             if (currentUser == null || !currentUser.IsAdmin)
             {
-                return Forbid("Only admins can delete users");
+                return Forbid();
             }
             var existingUser = await _userDataService.GetUserById(userId);
             if (existingUser == null)

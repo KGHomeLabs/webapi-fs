@@ -5,10 +5,10 @@ using WebApi.Tests.Setup;
 
 namespace WebApi.Tests.UserControllerTests.TestData
 {
-    public class UserControllerData : ATestDataSetup
+    public class UserNonAdminData : ATestDataSetup
     {      
 
-        public UserControllerData(IDbConnection connection) : base(connection)
+        public UserNonAdminData(IDbConnection connection) : base(connection)
         {
         }
 
