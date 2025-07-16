@@ -1,18 +1,14 @@
 ﻿using SqlKata.Compilers;
 using SqlKata.Execution;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-
 using WebApi.Tests.Setup;
 
-namespace WebApi.Tests.TestData
+namespace WebApi.Tests.UserControllerTests.TestData
 {
-    public class UserControllerTestData : ATestDataSetup
+    public class UserControllerData : ATestDataSetup
     {      
 
-        public UserControllerTestData(IDbConnection connection) : base(connection)
+        public UserControllerData(IDbConnection connection) : base(connection)
         {
         }
 

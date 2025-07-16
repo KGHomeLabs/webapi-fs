@@ -1,22 +1,23 @@
 ﻿using FluentAssertions;
-using System.Data;
+
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApi.Tests.Extensions;
 using WebApi.Tests.Setup;
-using WebApi.Tests.TestData;
+
+using WebApi.Tests.UserControllerTests.TestData;
 using Xunit;
 
-namespace WebApi.Tests
+namespace WebApi.Tests.UserControllerTests
 {
     [Collection("DatabaseCollection")]
-    public class UserControllerIntegrationTests : DatabaseIntegrationBase
+    public class UserControllerIntegration : DatabaseIntegrationBase
     {
         private readonly HttpClient _client;
 
-        public UserControllerIntegrationTests(DataSetupFixture dbFixture, TestWebApplicationFactory factory)
+        public UserControllerIntegration(DataSetupFixture dbFixture, TestWebApplicationFactory factory)
             : base(dbFixture, factory)
         {
             _client = factory.CreateClient();
@@ -26,7 +27,7 @@ namespace WebApi.Tests
         [Trait("Integration Test", "Happy Path")]
         public async Task MeEndpoint_WithValidToken_ReturnsUserName()
         {
-            var dataSetup = new UserControllerTestData(Connection);
+            var dataSetup = new UserControllerData(Connection);
             AddTestDataSetup(dataSetup);
 
             const string userId = "test001"; // From MeTestDataSetup.Seed

@@ -26,7 +26,7 @@ namespace WebApi.Controllers
             var userId = HttpContext?.User.FindFirst("sub")?.Value;
             var userFart = HttpContext?.User.FindFirst("userFart")?.Value;
 
-            return Ok($"Hello, {userFart}! (UserID: {userId})");
+            return Ok($"Hello,  (UserID: {userId})");
         }
     }
 }
