@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using WebApi.Services;
 
-namespace WebApi.Tests
+namespace WebApi.Tests.Setup
 {
     public class TestWebApplicationFactory : WebApplicationFactory<Program>
     {
