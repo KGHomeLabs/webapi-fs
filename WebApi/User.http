@@ -1,0 +1,41 @@
+@baseUrl = https://localhost:5001
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+
+### Get current user
+GET {{baseUrl}}/api/user/me
+Authorization: Bearer {{authToken}}
+###
+
+### Create a new user
+POST {{baseUrl}}/api/user
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "UserId": "user456",
+    "IsAdmin": false,
+    "IsRoot": false,
+    "UserName": "Jane Doe",
+    "IsLockedOut": false
+}
+
+###
+
+### Update user (requires IsAdmin=true for user123)
+PUT {{baseUrl}}/api/user/user456
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "UserId": "user456",
+    "IsAdmin": true,
+    "UserName": "Jane Doe Updated",
+    "IsLockedOut": false
+}
+
+###
+
+### Delete user (requires IsAdmin=true for user123)
+DELETE {{baseUrl}}/api/user/user456
+Authorization: Bearer {{authToken}}
