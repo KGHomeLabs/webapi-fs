@@ -29,7 +29,7 @@ steps:
     sqllocaldb info mssqllocaldb
   displayName: 'Create and Start LocalDB'
 
-- script: dotnet run --project WebApi.Migrations/WebApi.Migrations.csproj
+- script: dotnet run --project WebApi.Migrations.csproj
   displayName: 'Run Migrations'
   workingDirectory: $(Build.SourcesDirectory)/WebApi.Migrations
 
