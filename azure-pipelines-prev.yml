@@ -23,8 +23,12 @@ steps:
 - script: dotnet build --no-restore --configuration Release
   displayName: 'Build'
 
-- script: sqllocaldb info mssqllocaldb
-  displayName: 'Check LocalDB Status'
+- script: |
+    sqllocaldb create mssqllocaldb
+    sqllocaldb start mssqllocaldb
+    sqllocaldb info mssqllocaldb
+  displayName: 'Create and Start LocalDB'
+
 
 - script: dotnet test --no-build --configuration Release --logger trx
   displayName: 'Test'
