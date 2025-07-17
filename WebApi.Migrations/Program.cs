@@ -58,21 +58,21 @@ namespace YourWebApi.Migrations
 
         private static string GetConnectionString(string[] args, IConfiguration configuration)
         {
-            // Priority: Command line argument > Environment variable > appsettings.json, a bit experimental but should work well on CICD
+            // Priority: Command line argument > Azure environment variable > appsettings.json
 
-            // 1. Command line argument (for CI/CD)
+            // 1. Command line argument (for CI/CD or manual runs)
             if (args.Length > 0 && !string.IsNullOrEmpty(args[0]))
             {
                 Console.WriteLine("Using connection string from command line argument");
                 return args[0];
             }
 
-            // 2. Environment variable (for CI/CD with env vars)
-            var envConnectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
-            if (!string.IsNullOrEmpty(envConnectionString))
+            // 2. Azure environment variable (for CI/CD targeting Azure)
+            var azureConnectionString = Environment.GetEnvironmentVariable("AZURE_CONNECTION_STRING");
+            if (!string.IsNullOrEmpty(azureConnectionString))
             {
-                Console.WriteLine("Using connection string from environment variable");
-                return envConnectionString;
+                Console.WriteLine("Using Azure connection string from environment variable");
+                return azureConnectionString;
             }
 
             // 3. appsettings.json (for local development)

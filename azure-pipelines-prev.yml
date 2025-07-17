@@ -1,27 +1,32 @@
 trigger:
   branches:
     include:
-      - prev  # merging into `prev`
+      - prev
   paths:
     exclude:
       - azure-pipelines-prev.yml
-      
+
 pr: none
 
 pool:
   vmImage: 'windows-latest'
+
+variables:
+  # Define Azure connection string as a pipeline variable (set in Azure DevOps UI or Library for security)
+  azureConnectionString: $(AZURE_CONNECTION_STRING)
 
 steps:
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
     version: '8.0.x'
+  displayName: 'Install .NET SDK'
 
 - script: dotnet restore
-  displayName: 'Restore'
+  displayName: 'Dotnet Restore'
 
 - script: dotnet build --no-restore --configuration Release
-  displayName: 'Build'
+  displayName: 'Building Solution'
 
 - script: |
     sqllocaldb create mssqllocaldb
@@ -30,33 +35,34 @@ steps:
   displayName: 'Create and Start LocalDB'
 
 - script: dotnet run --project WebApi.Migrations.csproj
-  displayName: 'Run Migrations'
+  displayName: 'Run Migrations (LocalDB)'
   workingDirectory: $(Build.SourcesDirectory)/WebApi.Migrations
 
 - script: dotnet test --no-build --configuration Release --logger trx
-  displayName: 'Test'
+  displayName: 'Run Tests against LocalDB'
+  condition: succeeded()
 
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'VSTest'
     testResultsFiles: '**/TestResults/*.trx'
+  condition: succeededOrFailed()
 
-# STEP 1: dotnet publish to output deployable files
+- script: dotnet run --project WebApi.Migrations.csproj
+  displayName: 'Run Migrations (Azure DB)'
+  workingDirectory: $(Build.SourcesDirectory)/WebApi.Migrations
+  env:
+    AZURE_CONNECTION_STRING: $(azureConnectionString)
+  condition: succeeded()
+
 - script: dotnet publish --configuration Release --output $(Build.ArtifactStagingDirectory)
-  displayName: 'Publish App'
+  displayName: 'Publish App to File Stage'
 
-# I dont really need this because I dont use the resulting artifact anywhere
-# STEP 2: Publish artifacts 
-#- task: PublishBuildArtifacts@1
-#  inputs:
-#    pathToPublish: '$(Build.ArtifactStagingDirectory)'
-#    artifactName: 'drop'
-#    publishLocation: 'Container'
-
-# STEP 3: Deploy that artifact Azure Web App
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: 'Connection2Azure'  
-    appType: 'webApp'                     # I think thats the windows standard version
-    appName: 'app-service-homelab'              
-    package: '$(Build.ArtifactStagingDirectory)' 
+    azureSubscription: 'Connection2Azure'
+    appType: 'webApp'
+    appName: 'app-service-homelab'
+    package: '$(Build.ArtifactStagingDirectory)'
+  displayName: 'Deploy Web App to Azure'
+  condition: succeeded()
