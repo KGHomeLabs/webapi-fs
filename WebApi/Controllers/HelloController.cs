@@ -24,7 +24,6 @@ namespace WebApi.Controllers
             _logger.LogInformation("ClownsWorld endpoint called");
 
             var userId = HttpContext?.User.FindFirst("sub")?.Value;
-            var userFart = HttpContext?.User.FindFirst("userFart")?.Value;
 
             return Ok($"Hello,  (UserID: {userId})");
         }
