@@ -30,7 +30,14 @@ namespace YourWebApi.Migrations
                 using var scope = serviceProvider.CreateScope();
 
                 // Create database if it doesn't exist
-                await EnsureDatabaseExists(connectionString);
+                if (!connectionString.Contains("database.windows.net", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("Non-azure database is targeted...");
+                    await EnsureDatabaseExists(connectionString);
+                } else
+                {
+                    Console.WriteLine("Azure database is targeted. Skipping EnsureDatabaseExists check.");
+                }
 
                 // Run migrations
                 var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
@@ -104,7 +111,7 @@ namespace YourWebApi.Migrations
             var databaseName = builder.InitialCatalog;
 
             var masterConnectionString = connectionString.Replace($"Database={databaseName}", "Database=master");
-
+            Console.WriteLine($"InitialCatalog is: {databaseName}");
             using var connection = new Microsoft.Data.SqlClient.SqlConnection(masterConnectionString);
             await connection.OpenAsync();
 
