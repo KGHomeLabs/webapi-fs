@@ -48,6 +48,18 @@ steps:
     testResultsFiles: '**/TestResults/*.trx'
   condition: succeededOrFailed()
 
+- task: AzureCLI@2
+  displayName: 'Add Agent IP to SQL Firewall'
+  inputs:
+    azureSubscription: 'Connection2Azure'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      AGENT_IP=$(curl -s http://ipinfo.io/ip)
+      echo "Agent IP: $AGENT_IP"
+      az sql server firewall-rule create --resource-group Homelab2025 --server homelab42 --name PipelineAgent_$(date +%s) --start-ip-address $AGENT_IP --end-ip-address $AGENT_IP
+  condition: succeeded()
+
 - script: dotnet run --project WebApi.Migrations.csproj
   displayName: 'Run Migrations (Azure DB)'
   workingDirectory: $(Build.SourcesDirectory)/WebApi.Migrations
