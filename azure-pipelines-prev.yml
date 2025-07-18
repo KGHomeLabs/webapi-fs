@@ -35,7 +35,7 @@ steps:
   displayName: 'Create and Start LocalDB'
 
 - script: dotnet run --project WebApi.Migrations.csproj
-  displayName: 'Run Migrations (LocalDB)'
+  displayName: 'Run Migrations against LocalDB'
   workingDirectory: $(Build.SourcesDirectory)/WebApi.Migrations
 
 - script: dotnet test --no-build --configuration Release --logger trx
@@ -47,6 +47,11 @@ steps:
     testResultsFormat: 'VSTest'
     testResultsFiles: '**/TestResults/*.trx'
   condition: succeededOrFailed()
+
+- powershell: |
+    Test-NetConnection -ComputerName homelab42.database.windows.net -Port 1433
+  displayName: 'Test TCP Connection to Azure SQL (Port 1433)'
+  condition: succeeded()
 
 - task: AzureCLI@2
   displayName: 'Add Agent IP to SQL Firewall'
@@ -61,7 +66,7 @@ steps:
   condition: succeeded()
 
 - script: dotnet run --project WebApi.Migrations.csproj
-  displayName: 'Run Migrations (Azure DB)'
+  displayName: 'Run Migrations against Azure DB'
   workingDirectory: $(Build.SourcesDirectory)/WebApi.Migrations
   env:
     AZURE_CONNECTION_STRING: $(azureConnectionString)
