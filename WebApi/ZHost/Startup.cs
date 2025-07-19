@@ -8,11 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
-using WebApi.Extensions;
 using WebApi.Services;
+using WebApi.ZHost.Config;
+using WebApi.ZHost.Middleware;
 
 
-namespace WebApi
+namespace WebApi.ZHost
 {
     public class Startup
     {     

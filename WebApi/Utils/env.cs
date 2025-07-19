@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using System.Reflection.Metadata.Ecma335;
 
-namespace WebApi
+namespace WebApi.Utils
 {
    public static class EnvironmentExtension
     {

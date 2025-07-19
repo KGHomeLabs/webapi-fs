@@ -2,12 +2,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Enrichers.WithCaller;
 using Serilog.Events;
 using System;
 using System.Diagnostics;
 
-namespace WebApi
+namespace WebApi.ZHost
 {
     public class Program
     {
@@ -67,12 +66,15 @@ namespace WebApi
             }
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+           
+            return Host.CreateDefaultBuilder(args) // Corrected namespace usage
                 .UseSerilog() // use the loaded Serilog config
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+        }
     }
 }
