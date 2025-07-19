@@ -34,13 +34,14 @@ namespace WebApi.Services
 
                 try
                 {
-                    var credential = new DefaultAzureCredential();
-                    var tokenRequestContext = new TokenRequestContext(new[] { "https://database.windows.net/.default" });
+                    _logger.LogInformation("Removed block");
+                    //var credential = new DefaultAzureCredential();
+                    //var tokenRequestContext = new TokenRequestContext(new[] { "https://database.windows.net/.default" });
 
-                    var token = credential.GetToken(tokenRequestContext);
+                    //var token = credential.GetToken(tokenRequestContext);
 
-                    _logger.LogInformation("Successfully acquired Azure AD token. Setting AccessToken on SqlConnection.");
-                    connection.AccessToken = token.Token;
+                    //_logger.LogInformation("Successfully acquired Azure AD token. Setting AccessToken on SqlConnection.");
+                    //connection.AccessToken = token.Token;
                 }
                 catch (Exception ex)
                 {
