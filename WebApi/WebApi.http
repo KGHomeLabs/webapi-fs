@@ -21,6 +21,6 @@ Authorization: Bearer {{Bearer_Token}}
 ###
 
 ### Test Hello Endpoint on Azure - With JWT Token
-GET {{WebApi_OnlineAddress}}/hello
+GET {{WebApi_OnlineAddress}}/hello234
 Accept: application/json
 Authorization: Bearer {{Bearer_Token}}

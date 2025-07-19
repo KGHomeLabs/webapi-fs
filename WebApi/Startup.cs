@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using CorrelationId;
+using CorrelationId.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 using WebApi.Extensions;
 using WebApi.Services;
@@ -24,7 +27,12 @@ namespace WebApi
         {
             // var jwtSettings = Configuration.GetSection("JwtSettings"); //TODO get back to this in production. currently this is environment safe
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
+            services.AddDefaultCorrelationId(options =>
+            {
+                options.AddToLoggingScope = true;
+                options.EnforceHeader = false;
+                options.IncludeInResponse = true;
+            });
             services.AddControllers();
 
             services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
@@ -39,6 +47,8 @@ namespace WebApi
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCorrelationId();
+            app.UseSerilogRequestLogging();
             if (env.IsDevelopment())
             {               
                 app.UseSwagger();
