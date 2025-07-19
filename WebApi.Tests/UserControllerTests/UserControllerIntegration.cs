@@ -584,33 +584,5 @@ namespace WebApi.Tests.UserControllerTests
 
             adminDataSetup.Clean();
         }
-
-        //[Fact(DisplayName = "Get all users with no users returns empty list")]
-        //[Trait("Integration Test", "Edge Case")]
-        //public async Task GetAllUsers_EmptyDatabase_ReturnsEmptyList()
-        //{
-        //    var adminDataSetup = new AdminUserData(Connection);
-        //    AddTestDataSetup(adminDataSetup);
-
-        //    // Delete all users to simulate empty database
-        //    var db = new QueryFactory(Connection, new SqlServerCompiler());
-        //    await db.Query("Users").DeleteAsync();
-
-        //    const string adminUserId = "admin001";
-        //    _client.SetFakeJwtToken(
-        //        new Claim("sub", adminUserId),
-        //        new Claim("iss", "test-issuer")
-        //    );
-
-        //    var response = await _client.GetAsync("api/user?page=1&pageSize=10");
-        //    response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        //    var responseContent = await response.Content.ReadAsStringAsync();
-        //    var users = JsonSerializer.Deserialize<List<UserDBO>>(responseContent);
-        //    users.Should().NotBeNull();
-        //    users.Should().BeEmpty();
-
-        //    adminDataSetup.Clean();
-        //}
     }
 }

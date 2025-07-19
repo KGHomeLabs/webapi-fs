@@ -1,6 +1,9 @@
+using Microsoft.Extensions.Logging;
 using SqlKata;
 using SqlKata.Execution;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using WebApi.Database.Models;
 
@@ -9,15 +12,31 @@ namespace WebApi.Services
     public class UserDataService : IUserDataService
     {
         private readonly IDbConnectionFactory _connectionFactory;
-
-        public UserDataService(IDbConnectionFactory connectionFactory)
+        private readonly ILogger<UserDataService> _logger;
+        public UserDataService(IDbConnectionFactory connectionFactory, ILogger<UserDataService> logger)
         {
+            _logger = logger;
             _connectionFactory = connectionFactory;
         }
 
         private QueryFactory CreateQueryFactory()
         {
             var connection = _connectionFactory.CreateConnection();
+            try
+            {
+                if (connection.State != ConnectionState.Open)
+                {
+                    _logger.LogInformation("Attempting to open database connection...");
+                    connection.Open();
+                    _logger.LogInformation("Database connection opened successfully.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to open database connection.");
+                throw;
+            }
+
             return new QueryFactory(connection, new SqlKata.Compilers.SqlServerCompiler());
         }
 
@@ -25,23 +44,51 @@ namespace WebApi.Services
         {
             using var queryFactory = CreateQueryFactory();
             var query = new Query("Users").Select("UserName").Where("UserId", userId);
-            var userName = await queryFactory.FirstOrDefaultAsync<string>(query);
-            return userName ?? $"UnknownUser_{userId}";
+
+            try
+            {
+                var userName = await queryFactory.FirstOrDefaultAsync<string>(query);
+                return userName ?? $"UnknownUser_{userId}";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error querying user display name for {UserId}", userId);
+                throw;
+            }
         }
 
         public async Task<UserDBO> GetUserById(string userId)
         {
             using var queryFactory = CreateQueryFactory();
             var query = new Query("Users").Where("UserId", userId);
-            return await queryFactory.FirstOrDefaultAsync<UserDBO>(query);
+
+            try
+            {
+                return await queryFactory.FirstOrDefaultAsync<UserDBO>(query);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error querying user by ID {UserId}", userId);
+                throw;
+            }
         }
+
         public async Task<IEnumerable<UserDBO>> GetAllUsers(int page = 1, int pageSize = 10)
         {
             using var queryFactory = CreateQueryFactory();
             var query = new Query("Users")
                 .Offset((page - 1) * pageSize)
                 .Limit(pageSize);
-            return await queryFactory.GetAsync<UserDBO>(query);
+
+            try
+            {
+                return await queryFactory.GetAsync<UserDBO>(query);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving all users (page {Page}, size {PageSize})", page, pageSize);
+                throw;
+            }
         }
 
         public async Task CreateUser(UserDBO user)
@@ -55,7 +102,16 @@ namespace WebApi.Services
                 user.UserName,
                 user.IsLockedOut
             });
-            await queryFactory.ExecuteAsync(query);
+
+            try
+            {
+                await queryFactory.ExecuteAsync(query);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating user {UserId}", user.UserId);
+                throw;
+            }
         }
 
         public async Task UpdateUser(string userId, UserDBO user)
@@ -68,14 +124,32 @@ namespace WebApi.Services
                 user.UserName,
                 user.IsLockedOut
             });
-            await queryFactory.ExecuteAsync(query);
+
+            try
+            {
+                await queryFactory.ExecuteAsync(query);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating user {UserId}", userId);
+                throw;
+            }
         }
 
         public async Task DeleteUser(string userId)
         {
             using var queryFactory = CreateQueryFactory();
             var query = new Query("Users").Where("UserId", userId).AsDelete();
-            await queryFactory.ExecuteAsync(query);
+
+            try
+            {
+                await queryFactory.ExecuteAsync(query);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting user {UserId}", userId);
+                throw;
+            }
         }
     }
 }

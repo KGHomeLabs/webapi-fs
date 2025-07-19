@@ -53,6 +53,7 @@ steps:
   displayName: 'Test TCP Connection to Azure SQL (Port 1433)'
   condition: succeeded()
 
+
 - task: AzureCLI@2
   displayName: 'Add Agent IP to SQL Firewall'
   inputs:
