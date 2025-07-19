@@ -65,19 +65,6 @@ steps:
 #      az sql db show --resource-group Homelab2025 --server homelab42 --name homelabDB
 #      sleep 30
 
-
-- task: AzureCLI@2
-  displayName: 'Wake up SQL Database'
-  inputs:
-    azureSubscription: 'Connection2Azure'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      # Wake database and wait for it to be online
-      az sql db show --resource-group Homelab2025 --server homelab42 --name homelabDB
-      sleep 30
-
-
 - task: AzureCLI@2
   displayName: 'Add Agent IP to SQL Firewall'
   inputs:

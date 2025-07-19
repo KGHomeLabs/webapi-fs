@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using WebApi.Utils;
 
-namespace WebApi
+namespace WebApi.ZHost.Config
 {
     public static class JWTOptionSelector
     {

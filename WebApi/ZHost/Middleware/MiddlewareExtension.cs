@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using WebApi.Middleware;
 
-namespace WebApi.Extensions
+namespace WebApi.ZHost.Middleware
 {
     public static class ApplicationBuilderExtensions
     {

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using WebApi.Services;
+using WebApi.ZHost;
 
 namespace WebApi.Tests.Setup
 {

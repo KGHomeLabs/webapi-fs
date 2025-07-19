@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WebApi.Database.Models;
 using WebApi.Services;
 
-namespace WebApi.Middleware
+namespace WebApi.ZHost.Middleware
 {
     public class UserEnrichmentMiddleware
     {

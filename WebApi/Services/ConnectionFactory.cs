@@ -1,6 +1,4 @@
-﻿using Azure.Core;
-using Azure.Identity;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,7 +13,7 @@ namespace WebApi.Services
         public SqlConnectionFactory(IConfiguration configuration, ILogger<SqlConnectionFactory> logger)
         {
             _logger = logger;
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _connectionString = configuration.GetConnectionString("DefaultConnection")!;
             if (string.IsNullOrEmpty(_connectionString))
             {
                 _logger.LogError("[ConnectionFactory] Connection string 'DefaultConnection' null or empty.");
