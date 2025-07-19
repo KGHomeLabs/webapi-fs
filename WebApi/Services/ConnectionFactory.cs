@@ -22,7 +22,7 @@ namespace WebApi.Services
             }
         }
 
-        public IDbConnection CreateConnection()
+          public IDbConnection CreateConnection()
         {
             _logger.LogInformation("Creating SQL connection using configured connection string.");
 
